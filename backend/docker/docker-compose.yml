@@ -1,0 +1,96 @@
+services:
+
+  skeleton-postgres:
+    image: postgres:17
+    container_name: skeleton-postgres
+    env_file:
+      - ./../.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - skeleton-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  skeleton-redis:
+    image: redis:7.4
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    container_name: skeleton-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - skeleton-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  http:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ilm-fan-backend:local
+    command: ["./http"]
+    env_file:
+      - ./../.env
+    environment:
+      CONTAINER_MODE: "1"
+    ports:
+      - "8080:8080"
+    volumes:
+      - http_logs:/app/logs
+      - app_storage:/app/storage
+    networks:
+      - skeleton-network
+    restart: unless-stopped
+    depends_on:
+      skeleton-postgres:
+        condition: service_healthy
+      skeleton-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  async:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ilm-fan-backend:local
+    command: ["./async"]
+    env_file:
+      - ./../.env
+    environment:
+      CONTAINER_MODE: "1"
+    volumes:
+      - async_logs:/app/logs
+    networks:
+      - skeleton-network
+    restart: unless-stopped
+    depends_on:
+      http:
+        condition: service_healthy
+
+networks:
+  skeleton-network:
+    driver: bridge
+
+volumes:
+  pg_data:
+  redis_data:
+  http_logs:
+  async_logs:
+  app_storage:

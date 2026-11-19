@@ -1,0 +1,6 @@
+.git
+.idea
+logs
+storage
+docker/.volumes
+**/.DS_Store

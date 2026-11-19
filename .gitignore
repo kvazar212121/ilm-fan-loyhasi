@@ -1,0 +1,20 @@
+.DS_Store
+*.pem
+
+# secrets
+.env
+.env.local
+.env.*.local
+
+# frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/coverage/
+
+# backend
+backend/logs/
+backend/storage/
+
+# IDE
+.idea/

@@ -1,0 +1,21 @@
+---
+description: Frontend fayli 200 qatordan oshmasin, oshsa papkaga bo‘linadi
+globs: frontend/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Frontend fayl hajmi
+
+Har bir `frontend` fayli 200 qatordan oshmaydi. Hisob fayldagi barcha qatorlar, bo‘sh qatorlar ham kiradi.
+
+Sahifa (`app/**/page.tsx`) faqat komponentlarni yig‘adi. Uzun matn, ro‘yxat va mantiq sahifa faylida qolmaydi.
+
+200 qatorga sig‘maydigan narsa o‘z nomi bilan papka bo‘ladi. Har bir bo‘lak alohida komponent.
+
+```text
+components/landing/Hero.tsx
+components/landing/Audiences.tsx
+components/landing/Sections.tsx
+```
+
+Bitta `Landing.tsx` ichiga hero, auditoriya va bo‘limlarni joylashtirmang.
