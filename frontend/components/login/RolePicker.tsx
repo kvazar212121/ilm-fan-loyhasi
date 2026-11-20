@@ -2,20 +2,28 @@ import { RoleIcon } from "@/components/login/RoleIcon";
 import { roles, type RoleId } from "@/components/login/roles";
 
 type RolePickerProps = {
+  onBack: () => void;
   onSelect: (roleId: RoleId) => void;
 };
 
-export function RolePicker({ onSelect }: RolePickerProps) {
+export function RolePicker({ onBack, onSelect }: RolePickerProps) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <p className="text-xs font-medium tracking-[0.16em] text-accent uppercase">
-          1-qadam
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-fit text-sm text-ink/55 transition-colors hover:text-ink"
+        >
+          ← Kirish usuli
+        </button>
+        <p className="text-xs font-medium tracking-[0.16em] text-accent uppercase">2-qadam</p>
+        <h1 className="text-3xl font-semibold tracking-tight">Qaysi rol?</h1>
+        <p className="text-sm leading-6 text-ink/60">
+          O‘qituvchi bitta fan, abituriyent bir nechta fan tanlaydi. O‘quvchidan fan so‘ralmaydi.
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight">Kim sifatida kirasiz?</h1>
-        <p className="text-sm leading-6 text-ink/60">Rolni tanlang. Kirish shundan keyin ochiladi.</p>
       </div>
-      <ul className="grid grid-cols-3 gap-3">
+      <ul className="grid gap-3 sm:grid-cols-2">
         {roles.map((role) => (
           <li key={role.id}>
             <button

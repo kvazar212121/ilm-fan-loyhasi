@@ -1,6 +1,6 @@
 export const navItems = [
-  { href: "/tayyorlovlar", label: "Tayyorlovlar" },
-  { href: "/guides", label: "Qo‘llanmalar" },
+  { href: "/tayyorlov/sertifikat", label: "Sertifikatga tayyorlov" },
+  { href: "/tayyorlov/abituriyent", label: "Abituriyent tayyorlovi" },
   { href: "/textbooks", label: "Darsliklar" },
   { href: "/tests", label: "Testlar" },
   { href: "/courses", label: "Kurslar" },

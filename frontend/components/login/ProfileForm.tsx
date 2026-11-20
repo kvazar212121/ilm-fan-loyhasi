@@ -9,11 +9,13 @@ type ProfileDraft = {
 };
 
 type ProfileFormProps = {
+  step: string;
+  backLabel: string;
   onBack: () => void;
   onSave: (profile: ProfileDraft) => void;
 };
 
-export function ProfileForm({ onBack, onSave }: ProfileFormProps) {
+export function ProfileForm({ step, backLabel, onBack, onSave }: ProfileFormProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -45,10 +47,10 @@ export function ProfileForm({ onBack, onSave }: ProfileFormProps) {
           onClick={onBack}
           className="w-fit text-sm text-ink/55 transition-colors hover:text-ink"
         >
-          ← Kirish usuli
+          {backLabel}
         </button>
         <p className="text-xs font-medium tracking-[0.16em] text-accent uppercase">
-          Yangi foydalanuvchi
+          {step}
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">Ism va familiya</h1>
         <p className="text-sm leading-6 text-ink/60">

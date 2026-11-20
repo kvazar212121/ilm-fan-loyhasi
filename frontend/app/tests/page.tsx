@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import { EmptyState } from "@/components/shell/EmptyState";
+import { GuestOnly } from "@/components/marketing/GuestOnly";
+import { testStory } from "@/components/marketing/stories/try";
+import { FanScope } from "@/components/tests/FanScope";
+import { TestModes } from "@/components/tests/TestModes";
 
 export const metadata: Metadata = {
   title: "Testlar",
@@ -8,9 +11,18 @@ export const metadata: Metadata = {
 
 export default function TestsPage() {
   return (
-    <EmptyState
-      title="Testlar"
-      description="Imtihon oldidan mashq testlari shu yerda chiqadi. Kurs tashkilotchisi o‘z testini keyin shu bo‘limga chiqaradi."
-    />
+    <GuestOnly story={testStory}>
+      <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-16">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight">Testlar</h1>
+          <p className="text-lg leading-8 text-ink/70">
+            Yolg‘iz mashq qiling, birga vaqt bilan yeching yoki auditoriyada birinchi topgan ball
+            oladigan musobaqa oching.
+          </p>
+        </div>
+        <FanScope />
+        <TestModes />
+      </section>
+    </GuestOnly>
   );
 }

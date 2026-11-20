@@ -2,14 +2,14 @@ import Link from "next/link";
 
 const sections = [
   {
-    href: "/tayyorlovlar",
-    title: "Tayyorlovlar",
-    text: "O‘qituvchilar uchun fan bo‘yicha video va testlar.",
+    href: "/tayyorlov/sertifikat",
+    title: "Sertifikatga tayyorlov",
+    text: "O‘qituvchi davlat sertifikati imtihoniga tayyorlanadi.",
   },
   {
-    href: "/guides",
-    title: "O‘quv qo‘llanmalar",
-    text: "Fan bo‘yicha tayyorlov materiallari.",
+    href: "/tayyorlov/abituriyent",
+    title: "Abituriyent tayyorlovi",
+    text: "Abituriyent oliy ta’lim imtihonlariga tayyorlanadi.",
   },
   {
     href: "/textbooks",
@@ -29,7 +29,7 @@ const sections = [
   {
     href: "/reels",
     title: "Reels",
-    text: "Qo‘llanma qisqa video lentasida.",
+    text: "Qisqa video darslar lentada.",
   },
 ];
 

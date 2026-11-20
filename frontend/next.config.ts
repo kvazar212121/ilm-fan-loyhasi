@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  allowedDevOrigins: ["sat-ilmfan.gvazar.uz", "92.5.51.110"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

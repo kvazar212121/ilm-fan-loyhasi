@@ -1,5 +1,4 @@
 import { MethodIcon } from "@/components/login/MethodIcon";
-import type { Role } from "@/components/login/roles";
 
 export const loginMethods = [
   { id: "google", label: "Google" },
@@ -10,27 +9,18 @@ export const loginMethods = [
 export type LoginMethodId = (typeof loginMethods)[number]["id"];
 
 type MethodListProps = {
-  role: Role;
-  onBack: () => void;
   onSelect: (methodId: LoginMethodId) => void;
 };
 
-export function MethodList({ role, onBack, onSelect }: MethodListProps) {
+export function MethodList({ onSelect }: MethodListProps) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={onBack}
-          className="w-fit text-sm text-ink/55 transition-colors hover:text-ink"
-        >
-          ← Rolni o‘zgartirish
-        </button>
-        <p className="text-xs font-medium tracking-[0.16em] text-accent uppercase">
-          2-qadam
-        </p>
+        <p className="text-xs font-medium tracking-[0.16em] text-accent uppercase">1-qadam</p>
         <h1 className="text-3xl font-semibold tracking-tight">Kirish</h1>
-        <p className="text-sm leading-6 text-ink/60">{role.title} sifatida usulni tanlang.</p>
+        <p className="text-sm leading-6 text-ink/60">
+          Avval Telegram, Google yoki telefon raqam bilan kiring.
+        </p>
       </div>
       <ul className="flex flex-col gap-2">
         {loginMethods.map((method) => (

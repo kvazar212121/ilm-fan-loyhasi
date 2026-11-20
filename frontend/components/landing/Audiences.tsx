@@ -5,7 +5,7 @@ const audiences = [
   },
   {
     title: "O‘quvchi",
-    text: "O‘zi uchun darslik va qo‘llanma o‘qiydi.",
+    text: "O‘zi uchun darslik o‘qiydi va berilgan vazifani bajaradi.",
   },
   {
     title: "Kurs tashkilotchisi",

@@ -1,19 +1,18 @@
 import Link from "next/link";
 
 import { tayyorlovFans } from "@/components/tayyorlov/tayyorlov-fans";
+import { trackCopy, type TrackId } from "@/components/tayyorlov/tracks";
 
-export function TayyorlovFanGrid() {
+export function TayyorlovFanGrid({ track }: { track: TrackId }) {
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-10">
       <h2 className="text-sm font-medium tracking-wide text-ink/55 uppercase">Fanlar</h2>
-      <p className="mt-2 text-sm leading-6 text-ink/65">
-        Avval fan tanlang. Har bir fanda video qo‘llanmalar va testlar chiqadi.
-      </p>
+      <p className="mt-2 text-sm leading-6 text-ink/65">{trackCopy[track].fans}</p>
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">
         {tayyorlovFans.map((fan) => (
           <li key={fan.id}>
             <Link
-              href={`/tayyorlovlar/${fan.id}`}
+              href={`/tayyorlov/${track}/${fan.id}`}
               className="flex items-center justify-between rounded-2xl border border-line bg-white px-5 py-4 transition-colors hover:border-accent"
             >
               <span className="font-medium">{fan.title}</span>

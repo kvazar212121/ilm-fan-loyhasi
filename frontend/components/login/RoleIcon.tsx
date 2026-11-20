@@ -16,7 +16,7 @@ export function RoleIcon({ id }: RoleIconProps) {
     "aria-hidden": true as const,
   };
 
-  if (id === "teacher") {
+  if (id === "cert-teacher" || id === "guide-teacher") {
     return (
       <svg {...props}>
         <circle cx="7" cy="8" r="2.2" />

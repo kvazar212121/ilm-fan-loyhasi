@@ -1,52 +1,71 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
-import { studentProfileKey, type SavedProfile } from "@/components/profile/profile-data";
+import {
+  readStoredProfileRaw,
+  subscribeProfileStore,
+  type SavedProfile,
+} from "@/components/profile/profile-data";
+import { getTayyorlovFan, titlesForFans } from "@/components/tayyorlov/tayyorlov-fans";
+import type { TrackId } from "@/components/tayyorlov/tracks";
 
-function readProfileRaw() {
-  return sessionStorage.getItem(studentProfileKey);
-}
+const box = "rounded-2xl border border-line bg-white px-5 py-4 text-sm text-ink/75";
 
-export function TayyorlovAudienceNote() {
-  const raw = useSyncExternalStore(emptySubscribe, readProfileRaw, emptySnapshot);
-  const profile = raw ? (JSON.parse(raw) as SavedProfile) : null;
+export function TayyorlovAudienceNote({ track }: { track: TrackId }) {
+  const [profile, setProfile] = useState<SavedProfile | null>(null);
 
-  if (profile?.role === "teacher") {
+  useEffect(() => {
+    const sync = () => {
+      const raw = readStoredProfileRaw();
+      setProfile(raw ? (JSON.parse(raw) as SavedProfile) : null);
+    };
+    sync();
+    return subscribeProfileStore(sync);
+  }, []);
+
+  if (!profile?.role) return null;
+  const fanTitle =
+    profile.role === "applicant"
+      ? titlesForFans(profile.fanIds ?? [])
+      : (getTayyorlovFan(profile.fanId ?? "")?.title ?? "");
+
+  if (track === "sertifikat" && profile.role === "cert-teacher") {
     return (
       <p className="rounded-2xl border border-accent/25 bg-accent/5 px-5 py-4 text-sm text-ink/75">
-        Siz o‘qituvchi sifatida kirgansiz. Fan tanlab, shu fan bo‘yicha video va testlarni
-        oching.
+        Sertifikatga tayyorlov{fanTitle ? `: ${fanTitle}` : ""}. Shu fan bo‘yicha video va testlarni oching.
       </p>
     );
   }
 
-  if (profile?.role === "pupil" || profile?.role === "student") {
+  if (track === "abituriyent" && profile.role === "applicant") {
     return (
-      <p className="rounded-2xl border border-line bg-white px-5 py-4 text-sm text-ink/75">
-        Tayyorlovlar faqat sertifikat imtihoniga tayyorlanuvchi{" "}
-        <strong className="font-medium text-ink">o‘qituvchilar</strong> uchun. Darsliklar va
-        shaxsiy materiallar boshqa bo‘limlarda.
+      <p className="rounded-2xl border border-accent/25 bg-accent/5 px-5 py-4 text-sm text-ink/75">
+        Abituriyent tayyorlovi{fanTitle ? `: ${fanTitle}` : ""}. Shu fanlardagi darslar va testlar ochiladi.
       </p>
     );
   }
+
+  if (profile.role === "pupil" || profile.role === "student") {
+    return (
+      <p className={box}>
+        Bu yo‘l imtihonga tayyorlanayotganlar uchun. Sizga ustoz bergan vazifalar testlar bo‘limida.
+      </p>
+    );
+  }
+
+  const other = track === "sertifikat" ? "/tayyorlov/abituriyent" : "/tayyorlov/sertifikat";
+  const otherLabel = track === "sertifikat" ? "Abituriyent tayyorlovi" : "Sertifikatga tayyorlov";
 
   return (
-    <p className="rounded-2xl border border-line bg-white px-5 py-4 text-sm text-ink/75">
-      Bu bo‘lim o‘qituvchilar uchun.{" "}
-      <Link href="/login" className="font-medium text-accent hover:underline">
-        Kirish
-      </Link>{" "}
-      qilib, rolni <strong className="font-medium text-ink">O‘qituvchi</strong> tanlang.
+    <p className={box}>
+      {track === "sertifikat"
+        ? "Bu yo‘l o‘qituvchining sertifikat imtihoni uchun."
+        : "Bu yo‘l abituriyentning kirish imtihonlari uchun."}{" "}
+      <Link href={other} className="font-medium text-accent hover:underline">
+        {otherLabel}
+      </Link>
     </p>
   );
-}
-
-function emptySubscribe() {
-  return () => {};
-}
-
-function emptySnapshot() {
-  return null;
 }

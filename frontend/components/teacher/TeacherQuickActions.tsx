@@ -12,6 +12,11 @@ const actions = [
     text: "Qog‘ozga chiqadigan test tuzish.",
   },
   {
+    href: "/profile/tests/race",
+    title: "Auditoriya musobaqasi",
+    text: "Linkni ekranga chiqarish. Birinchi to‘g‘ri javob ball oladi.",
+  },
+  {
     href: "/profile/reels/create",
     title: "Reel joylash",
     text: "2 daqiqalik video, format va siqish.",

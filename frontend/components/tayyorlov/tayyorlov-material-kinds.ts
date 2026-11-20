@@ -1,7 +1,7 @@
 export const tayyorlovMaterialKinds = [
   {
     id: "video",
-    title: "Video qo‘llanmalar",
+    title: "Video darslar",
     text: "qisqa video darslar va tushuntirishlar.",
     href: "/reels",
   },

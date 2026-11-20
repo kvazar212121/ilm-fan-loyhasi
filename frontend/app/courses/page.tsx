@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
-import { EmptyState } from "@/components/shell/EmptyState";
+import { MemberCatalog } from "@/components/catalog/MemberCatalog";
+import { GuestOnly } from "@/components/marketing/GuestOnly";
+import { courseStory } from "@/components/marketing/stories/try";
 
 export const metadata: Metadata = {
   title: "Kurslar",
@@ -8,9 +10,8 @@ export const metadata: Metadata = {
 
 export default function CoursesPage() {
   return (
-    <EmptyState
-      title="Kurslar"
-      description="Tayyorlov kurslari shu yerda chiqadi."
-    />
+    <GuestOnly story={courseStory}>
+      <MemberCatalog kind="kurs" title="Kurslar" empty="Tayyorlov kurslari shu yerda chiqadi." />
+    </GuestOnly>
   );
 }

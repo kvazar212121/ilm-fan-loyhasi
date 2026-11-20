@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
+import { isTeacherRole } from "@/components/login/roles";
 import {
   studentProfileKey,
   type SavedProfile,
@@ -17,7 +18,7 @@ export function ProfileHome() {
   const raw = useSyncExternalStore(emptySubscribe, readSavedProfile, emptySnapshot);
   const profile = raw ? (JSON.parse(raw) as SavedProfile) : null;
 
-  if (profile?.role === "teacher") {
+  if (profile && isTeacherRole(profile.role)) {
     return <TeacherProfile profile={profile} />;
   }
 
