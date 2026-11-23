@@ -16,5 +16,14 @@ frontend/coverage/
 backend/logs/
 backend/storage/
 
+# flutter
+flutter/.dart_tool/
+flutter/build/
+flutter/.pub-cache/
+
 # IDE
 .idea/
+.projectmem/events.jsonl
+.projectmem/watch.pid
+.projectmem/watch.log
+.projectmem/structure.json

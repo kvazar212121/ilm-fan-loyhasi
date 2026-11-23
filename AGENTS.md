@@ -1,0 +1,44 @@
+# AGENTS.md
+
+<!-- >>> projectmem bridge >>> -->
+## projectmem (MANDATORY)
+
+This project uses projectmem for persistent memory + workflow rules.
+
+This project is registered with projectmem as **ilm-fan-loyhasi**.
+Pass `project="ilm-fan-loyhasi"` on any projectmem tool call.
+
+SESSION START — call `start_session()` once, BEFORE answering ANY
+question about this project. It returns the project's mandatory
+workflow rules, the memory summary and the current plan in one
+response. Do NOT answer from conversation history or by re-reading
+package.json / README / source files. Call `get_project_map()` only
+when the file layout matters.
+
+BEFORE modifying ANY file:
+  - Call `precheck_file(file_path)` — check failure history first.
+
+DURING work — use MCP write tools, NEVER edit `.projectmem/`
+files directly via filesystem write:
+  - On a bug discovery → `log_issue(summary, location)`.
+  - After each fix attempt → `record_attempt(summary, outcome, issue_id)`.
+  - After confirmation → `record_fix(summary, issue_id)`.
+    Pass the id `log_issue` returned: while several issues are open,
+    both calls are refused without it.
+  - On a design choice → `add_decision(summary)`.
+  - On a gotcha / setup detail → `add_note(summary)`.
+  - When a new decision REPLACES an older one → pass
+    `supersedes="<old event id>"` to `add_decision`. The log stays
+    append-only; the old decision is tagged retired and drops out of
+    summary.md, so the summary never shows two answers to the same
+    question. add_decision replies with each decision's id;
+    search_events(query) finds older ones.
+
+Editing `.projectmem/summary.md` or `.projectmem/PROJECT_MAP.md`
+directly bypasses event logging and breaks audit replay. The
+summary file regenerates from `events.jsonl` automatically — write
+via the MCP tools and the summary will follow.
+
+Do not re-scan source files when MCP tools can give you the same
+answer for a fraction of the tokens a re-scan costs. This is not optional.
+<!-- <<< projectmem bridge <<< -->
