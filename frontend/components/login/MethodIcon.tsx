@@ -1,5 +1,5 @@
 type MethodIconProps = {
-  id: "google" | "telegram" | "phone";
+  id: "google" | "telegram" | "phone" | "qr";
 };
 
 export function MethodIcon({ id }: MethodIconProps) {
@@ -34,6 +34,17 @@ export function MethodIcon({ id }: MethodIconProps) {
           fill="#fff"
           d="M17.2 7.6 6.9 11.6c-.7.3-.7.6-.1.8l2.6.8 1 .3 6.1-3.8c.3-.2.5 0 .3.2l-5 4.5-.2 2.2c.3 0 .4-.1.6-.3l1.4-1.4 2.9 2.2c.5.3.9.1 1-.5l1.8-8.4c.2-.8-.3-1.2-1.1-.8z"
         />
+      </svg>
+    );
+  }
+
+  if (id === "qr") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-5 w-5 text-accent" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+        <rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.2" />
+        <rect x="14" y="3.5" width="6.5" height="6.5" rx="1.2" />
+        <rect x="3.5" y="14" width="6.5" height="6.5" rx="1.2" />
+        <path d="M14 14h2.5v2.5H14zM18 14h2.5v2.5H18zM14 18h2.5v2.5H14zM18 18h2.5v2.5H18z" fill="currentColor" stroke="none" />
       </svg>
     );
   }

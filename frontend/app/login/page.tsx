@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 
 import { LoginFlow } from "@/components/login/LoginFlow";
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <LoginFlow />;
+  return (
+    <Suspense fallback={null}>
+      <LoginFlow />
+    </Suspense>
+  );
 }

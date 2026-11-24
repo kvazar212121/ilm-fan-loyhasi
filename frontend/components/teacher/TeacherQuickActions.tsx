@@ -25,20 +25,33 @@ const actions = [
 
 export function TeacherQuickActions() {
   return (
-    <section className="rounded-2xl border border-line bg-white p-5">
-      <h2 className="text-lg font-semibold">Asboblar</h2>
-      <ul className="mt-4 flex flex-col gap-2">
+    <section className="rounded-2xl border border-line bg-surface p-6">
+      <div className="border-b border-line pb-4">
+        <h2 className="font-display text-xl font-medium tracking-[-0.015em] text-ink">
+          O‘qituvchi asboblari
+        </h2>
+        <p className="mt-0.5 text-xs text-ink-muted">
+          Dars, test va musobaqa materiallarini tezkor boshqarish.
+        </p>
+      </div>
+
+      <ul className="mt-2 flex flex-col divide-y divide-line">
         {actions.map((item) => (
           <li key={item.href}>
             <Link
               href={item.href}
-              className="flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3 transition-colors hover:border-accent"
+              className="group -mx-2 flex items-center justify-between gap-3 rounded-xl px-2 py-3.5 transition-colors hover:bg-paper"
             >
               <span>
-                <span className="block text-sm font-medium">{item.title}</span>
-                <span className="block text-xs text-ink/55">{item.text}</span>
+                <span className="block text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                  {item.title}
+                </span>
+                <span className="mt-0.5 block text-xs leading-5 text-ink-muted">{item.text}</span>
               </span>
-              <span aria-hidden className="text-ink/30">
+              <span
+                aria-hidden
+                className="shrink-0 text-sm text-ink-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
+              >
                 →
               </span>
             </Link>

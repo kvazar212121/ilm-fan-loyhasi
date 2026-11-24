@@ -11,21 +11,28 @@ export function MyReels() {
   const reels: StoredReel[] = raw ? (JSON.parse(raw) as StoredReel[]) : [];
 
   return (
-    <section className="rounded-2xl border border-line bg-white p-5">
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="text-lg font-semibold">Mening reelslarim</h2>
-        <Link href="/profile/reels/create" className="text-sm font-medium text-accent">
+    <section className="rounded-2xl border border-line bg-surface p-6">
+      <div className="flex items-center justify-between gap-3 border-b border-line pb-4">
+        <h2 className="font-display text-xl font-medium tracking-[-0.015em] text-ink">
+          Mening reelslarim
+        </h2>
+        <Link
+          href="/profile/reels/create"
+          className="rounded-full bg-accent-soft px-3.5 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent hover:text-paper"
+        >
           Joylash
         </Link>
       </div>
       {reels.length === 0 ? (
-        <p className="mt-4 text-sm text-ink/60">Hozircha reelsingiz yo‘q.</p>
+        <p className="mt-4 text-sm leading-6 text-ink-muted">
+          Hozircha reelsingiz yo‘q. 2 daqiqalik qisqa dars videosini yuklab boshlang.
+        </p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
+        <ul className="mt-2 flex flex-col divide-y divide-line">
           {reels.map((reel) => (
-            <li key={reel.id} className="rounded-xl bg-paper px-4 py-3 text-sm">
-              <span className="font-medium">{reel.title}</span>
-              <span className="text-ink/55"> · {reel.durationSec}s</span>
+            <li key={reel.id} className="flex items-center justify-between gap-3 py-3 text-sm last:pb-0">
+              <span className="font-medium text-ink">{reel.title}</span>
+              <span className="shrink-0 text-xs text-ink-muted tabular-nums">{reel.durationSec}s</span>
             </li>
           ))}
         </ul>

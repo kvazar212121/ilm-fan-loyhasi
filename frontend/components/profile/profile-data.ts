@@ -2,6 +2,11 @@ export type StudentProfileData = {
   firstName: string;
   lastName: string;
   avatarUrl: string | null;
+  phone?: string | null;
+  email?: string | null;
+  birthDate?: string | null;
+  region?: string | null;
+  gender?: "male" | "female" | null;
 };
 
 export type SavedProfile = StudentProfileData & {

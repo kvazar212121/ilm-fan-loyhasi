@@ -13,7 +13,9 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 GOOS=linux \
     go build -trimpath -ldflags="-s -w" -o /out/http ./cmd/http/main.go \
  && CGO_ENABLED=0 GOOS=linux \
-    go build -trimpath -ldflags="-s -w" -o /out/async ./cmd/async/main.go
+    go build -trimpath -ldflags="-s -w" -o /out/async ./cmd/async/main.go \
+ && CGO_ENABLED=0 GOOS=linux \
+    go build -trimpath -ldflags="-s -w" -o /out/telegram-bot ./cmd/telegram-bot/main.go
 
 
 FROM alpine:3.23
@@ -25,7 +27,7 @@ RUN apk add --no-cache ca-certificates wget
 WORKDIR /app
 
 COPY docker/entrypoint.sh /entrypoint.sh
-COPY --from=builder /out/http /out/async ./
+COPY --from=builder /out/http /out/async /out/telegram-bot ./
 
 RUN chmod +x /entrypoint.sh
 

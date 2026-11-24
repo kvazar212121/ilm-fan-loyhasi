@@ -13,6 +13,8 @@ const (
 	CodeInvalidToken  Code = "INVALID_TOKEN"
 	CodeExpiredToken  Code = "EXPIRED_TOKEN"
 	CodeFileError     Code = "FILE_ERROR"
-	CodeForbidden     Code = "FORBIDDEN"
-	CodeAsyncError    Code = "ASYNC_ERROR"
+	CodeForbidden          Code = "FORBIDDEN"
+	CodeAsyncError         Code = "ASYNC_ERROR"
+	CodeTooManyRequests    Code = "TOO_MANY_REQUESTS"
+	CodeServiceUnavailable Code = "SERVICE_UNAVAILABLE"
 )

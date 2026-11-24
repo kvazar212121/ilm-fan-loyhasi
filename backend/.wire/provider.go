@@ -3,6 +3,13 @@ package wire
 
 import (
 	"github.com/google/wire"
+	authhttp "github.com/muhriddinnorqulov/skeleton/src/auth/http"
+	authpersistence "github.com/muhriddinnorqulov/skeleton/src/auth/persistence"
+	authgoogle "github.com/muhriddinnorqulov/skeleton/src/auth/providers/google"
+	authsms "github.com/muhriddinnorqulov/skeleton/src/auth/providers/sms"
+	authsecurity "github.com/muhriddinnorqulov/skeleton/src/auth/security"
+	authservice "github.com/muhriddinnorqulov/skeleton/src/auth/service"
+	authtelegram "github.com/muhriddinnorqulov/skeleton/src/auth/telegram"
 	services "github.com/muhriddinnorqulov/skeleton/src/core/application/services"
 	tasks "github.com/muhriddinnorqulov/skeleton/src/core/application/tasks"
 	entityusecases "github.com/muhriddinnorqulov/skeleton/src/core/application/usecases/entityusecases"
@@ -34,6 +41,24 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
+	authhttp.NewAuthGroup,
+	authhttp.NewHandlers,
+	authpersistence.NewIdentityRepositoryImpl,
+	authpersistence.NewOTPRepositoryImpl,
+	authpersistence.NewSessionRepositoryImpl,
+	authpersistence.NewTelegramAttemptRepositoryImpl,
+	authpersistence.NewTelegramContactRepositoryImpl,
+	authpersistence.NewUserStoreImpl,
+	authgoogle.NewOAuthImpl,
+	authsms.NewSender,
+	authsecurity.NewOTPCodeServiceImpl,
+	authsecurity.NewRateThrottleImpl,
+	authsecurity.NewRegistrationTicketSealerImpl,
+	authsecurity.NewTokenServiceImpl,
+	authservice.NewAccessTokenVerifier,
+	authservice.NewAuthService,
+	authservice.NewTelegramBotService,
+	authtelegram.NewBotApp,
 	services.NewEntityService,
 	tasks.NewProcessEntityTask,
 	entityusecases.NewCreateEntityUseCase,

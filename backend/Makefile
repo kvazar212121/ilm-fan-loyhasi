@@ -16,3 +16,7 @@ docker-run.local:
 docker-up:
 	@echo "Starting backend stack (http, async, postgres, redis)..."
 	@cd docker && docker compose -f docker-compose.yml --env-file ./../.env up --build -d
+
+docker-up-telegram:
+	@echo "Starting backend stack with telegram-bot..."
+	@cd docker && docker compose -f docker-compose.yml --env-file ./../.env --profile telegram up --build -d

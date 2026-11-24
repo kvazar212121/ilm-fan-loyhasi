@@ -1,48 +1,33 @@
-# projectmem - ilm_fan_loyhasi
+# projectmem - ilm-fan-loyhasi
 
-_Last updated: 2026-11-23_
+_Last updated: 2026-11-24_
 
 ## Project purpose
 Replace this placeholder with a concise description of what this project does, who it serves, and the main technologies or runtime assumptions.
 
 ## Recent issues
-- No issues logged yet.
+- [DONE] #0002 QR login via Telegram on mobile stalls at 'Telefon ulandi — tasdiqlash kutilmoqda' because mobile browser suspends JS polling when user switches to Telegram app to tap Tasdiqlash; backend PollQRLogin does not inspect the linked TelegramLoginAttempt directly. [backend/src/auth/service/auth_service_qr.go + frontend/components/login/QrApproveFlow.tsx] (fixed)
+- [DONE] #0001 skeleton-redis fails with FATAL CONFIG FILE ERROR requirepass wrong number of arguments when docker compose runs without --env-file ../.env [backend/docker/docker-compose.yml] (fixed)
 
 ## Decisions
-- Flutter app: RoleId.teacherMaterials uses dedicated bottom tabs (Darsliklar, Testlar, Reels, Hisobotlar, Profil) without Yangiliklar or Tayyorlov; Sertifikatga tayyorlanish is accessible via a button inside ProfileTabScreen.
-- Flutter teacher textbook builder: hierarchical TeacherTextbook -> TextbookSection (Bo'lim) -> TextbookTopic (Mavzu) -> LessonMaterialBlock (Matn, PDF, Video darslik, Ovozli tushuntirish, Rasm, Oraliq test) with sequentialLock and per-topic requireTestPassToUnlockNext + passingScorePercent...
-- Ovozli tushuntirish (LessonMaterialType.audio) blocks pair audio with a visual accompaniment (AudioVisualKind.image or AudioVisualKind.gif), selectable via ChoiceChip and ImagePicker gallery or filename.
-- Completed all 4 teacherMaterials feature sets: (1) Textbook student preview with live test-lock simulation, class invite code, homework block, maxAttempts/timeLimit rules; (2) Full TestEditorScreen with A/B/C/D, open-answer, matching questions, text/voice solutions, A/B paper variant generator...
-- Added Darslik marketplace (TextbookMarketplaceScreen): accessible from ProfileTabScreen for RoleId.teacherMaterials (with publish flow for free/paid textbooks synced from TeacherLessonsScreen) and directly as the 'textbooks' tab for RoleId.student.
-- Added textbook comment/Q&A loop (students comment in TextbookStudentPreviewScreen -> synced via MainShell to TeacherReportsScreen where teachers reply) and AI Test Generator from book/PDF/darslik/text in TeacherTestsScreen.
-- Split learner login into O'quvchiman -> 3 sub-roles (schoolStudent: Maktab o'quvchisi, student: Abituriyent, universityStudent: Talaba) with multi-subject FanPicker and tailored 5-tab menus per role (including SchoolTasksScreen with invite-code group join).
-- Updated TextbookMarketplaceScreen to a 2-column Play Market style card grid (GridView.builder with banner, rating, grade/own badge, action button, and tap-to-open detail bottom sheet) plus live search bar filtering by title, author, subject, or grade.
+- Build modular auth package in backend/src/auth/ adapting integrum-inc/id-backend patterns: Phone SMS OTP (etc.uz + local log), Telegram Bot deep-link/poll, Google OAuth PKCE + mobile ID token (phone optional for Google), registration tickets, JWT access+refresh sessions. [backend/src/auth/]
+- Verified account linking (Google OAuth, Telegram bot confirmation, or SMS OTP) automatically merges duplicate accounts into the existing owner account in a single DB transaction, transferring identities/sessions, clearing unique fields on soft-deleted duplicate, and issuing fresh tokens. [backend/src/auth/service/auth_service_link.go]
+- Added Steam-style browser QR code login (/login -> QR kod orqali kirish -> mobile browser /login/qr/[token]). Desktop receives a single-use 3-minute QR challenge (token in QR URL, secret poll token stored exclusively in desktop HttpOnly cookie ilm_qr_attempt). Mobile browser scan notifies...
+- Added devsms.uz SMS provider (SMS_PROVIDER=devsms, POST <DEVSMS_BASE_URL>/send_sms.php with Bearer token and sender 4546) plus optional SMS_OTP_TEMPLATE override ({code}) alongside existing etc and log providers. Temporarily configured backend/.env with hubservis devsms settings and moderated...
 
 ## Notes
-- Initial commit: Ilm Fan tayyorlov platformasi.
-- Flutter gotcha (SDK 3.14 / material_ui): Never wrap ListTile directly inside a DecoratedBox with a background color; Flutter asserts that ink splashes may be invisible. Use Material(color: Colors.white, shape: RoundedRectangleBorder(...), clipBehavior: Clip.antiAlias, child: ListTile(...)) instead.
+- No notes logged yet.
 
 ## Key files
-- `frontend/app/tests/page.tsx`
-- `frontend/app/textbooks/page.tsx`
-- `backend/src/infrastructure/docs/swagger.yaml`
-- `frontend/app/reels/page.tsx`
-- `backend/go.sum`
-- `frontend/app/page.tsx`
-- `backend/src/entrypoint/http/interceptor/middlewares/jwt_auth_middleware.go`
-- `frontend/app/tayyorlovlar/page.tsx`
-- `frontend/components/landing/Hero.tsx`
-- `backend/src/infrastructure/asyncq/asyncq.go`
-- `backend/src/entrypoint/http/interceptor/wsmiddlewares/.gitkeep`
-- `frontend/components/teacher/TeacherPageHeader.tsx`
-- `backend/src/entrypoint/http/interceptor/permissions/authenticated_user_permission.go`
-- `frontend/app/courses/page.tsx`
-- `backend/src/infrastructure/asyncq/context_impl.go`
-- `frontend/components/reels/ReelRules.tsx`
-- `backend/src/infrastructure/db/database.go`
-- `frontend/components/tayyorlov/tayyorlov-fans.ts`
-- `backend/src/infrastructure/docs/swagger.json`
-- `backend/src/infrastructure/persistence/models/user_model.go`
+- `backend/docker/docker-compose.yml`
+- `backend/src/auth/`
+- `../.env`
+- `docker-compose.yml`
+- `./../.env`
+- `backend/src/auth/service/auth_service_link.go`
+- `backend/src/auth/service/auth_service_qr.go + frontend/components/login/QrApproveFlow.tsx`
+- `backend/.env`
+- `/send_sms.php`
 
 ## Open questions
 - None logged yet.

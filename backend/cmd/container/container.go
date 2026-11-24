@@ -7,6 +7,13 @@
 package wire
 
 import (
+	authhttp "github.com/muhriddinnorqulov/skeleton/src/auth/http"
+	authpersistence "github.com/muhriddinnorqulov/skeleton/src/auth/persistence"
+	authgoogle "github.com/muhriddinnorqulov/skeleton/src/auth/providers/google"
+	authsms "github.com/muhriddinnorqulov/skeleton/src/auth/providers/sms"
+	authsecurity "github.com/muhriddinnorqulov/skeleton/src/auth/security"
+	authservice "github.com/muhriddinnorqulov/skeleton/src/auth/service"
+	authtelegram "github.com/muhriddinnorqulov/skeleton/src/auth/telegram"
 	"github.com/muhriddinnorqulov/skeleton/src/core/application/usecases/entityusecases"
 	"github.com/muhriddinnorqulov/skeleton/src/entrypoint/asynctask"
 	handlers2 "github.com/muhriddinnorqulov/skeleton/src/entrypoint/asynctask/handlers"
@@ -16,7 +23,7 @@ import (
 	"github.com/muhriddinnorqulov/skeleton/src/entrypoint/http/handlers/health"
 	"github.com/muhriddinnorqulov/skeleton/src/entrypoint/http/handlers/ws"
 	"github.com/muhriddinnorqulov/skeleton/src/entrypoint/http/interceptor/middlewares"
-	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/asyncq"
+	async "github.com/muhriddinnorqulov/skeleton/src/infrastructure/asyncq"
 	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/db"
 	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/echohttp"
 	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/echohttp/defaults"
@@ -26,6 +33,7 @@ import (
 	middlewares2 "github.com/muhriddinnorqulov/skeleton/src/infrastructure/gorillaws/middlewares"
 	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/logger"
 	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/persistence/repository"
+	"github.com/muhriddinnorqulov/skeleton/src/infrastructure/security"
 )
 
 // Injectors from wire.go:
@@ -44,11 +52,29 @@ func InitHttpApp() *http.App {
 	consoleLogger := logger.NewConsoleLogger()
 	consoleLoggerMiddleware := defaults.NewConsoleLoggerMiddleware(consoleLogger)
 	httpServer := echohttp.NewEchoServerImpl(echo, envEnv, developmentGroup, developerBasicAuthMiddleware, recoveryMiddleware, httpLoggerMiddleware, consoleLoggerMiddleware)
-	jwtAuthMiddleware := middlewares.NewJwtAuthMiddleware()
-	responseMiddleware := middlewares.NewResponseMiddleware()
 	gormDB := db.NewGormDB(envEnv)
 	database := db.NewDatabase(gormDB)
 	atomic := db.NewAtomicTxImpl(database)
+	userStore := authpersistence.NewUserStoreImpl(database)
+	identityRepository := authpersistence.NewIdentityRepositoryImpl(database)
+	otpRepository := authpersistence.NewOTPRepositoryImpl(database)
+	sessionRepository := authpersistence.NewSessionRepositoryImpl(database)
+	telegramContactRepository := authpersistence.NewTelegramContactRepositoryImpl(database)
+	telegramAttemptRepository := authpersistence.NewTelegramAttemptRepositoryImpl(database)
+	qrAttemptRepository := authpersistence.NewQRAttemptRepositoryImpl(database)
+	smsSender := authsms.NewSender(envEnv, consoleLogger)
+	googleOAuth := authgoogle.NewOAuthImpl(envEnv)
+	otpCodeService := authsecurity.NewOTPCodeServiceImpl(envEnv)
+	registrationTicketSealer := authsecurity.NewRegistrationTicketSealerImpl(envEnv)
+	tokenService := authsecurity.NewTokenServiceImpl()
+	jwtTokenProvider := security.NewJwtTokenAdapter(envEnv)
+	rateThrottle := authsecurity.NewRateThrottleImpl()
+	authService := authservice.NewAuthService(envEnv, atomic, userStore, identityRepository, otpRepository, sessionRepository, telegramContactRepository, telegramAttemptRepository, qrAttemptRepository, smsSender, googleOAuth, otpCodeService, registrationTicketSealer, tokenService, jwtTokenProvider, rateThrottle)
+	accessTokenVerifier := authservice.NewAccessTokenVerifier(authService)
+	jwtAuthMiddleware := middlewares.NewJwtAuthMiddleware(accessTokenVerifier)
+	responseMiddleware := middlewares.NewResponseMiddleware()
+	authHandlers := authhttp.NewHandlers(authService)
+	authGroup := authhttp.NewAuthGroup(authHandlers)
 	baseRepository := repository.NewBaseRepository(database)
 	entityRepository := repository.NewEntityRepositoryImpl(baseRepository)
 	createEntityUseCase := entityusecases.NewCreateEntityUseCase(atomic, entityRepository)
@@ -68,7 +94,7 @@ func InitHttpApp() *http.App {
 	wsGroup := groups.NewWsGroup(wsportWs, exampleWsHandler)
 	healthHandler := health.NewHealthHandler()
 	healthGroup := groups.NewHealthGroup(healthHandler)
-	app := http.NewApp(httpServer, envEnv, jwtAuthMiddleware, responseMiddleware, entityGroup, wsGroup, healthGroup, wsportWs)
+	app := http.NewApp(httpServer, envEnv, database, jwtAuthMiddleware, responseMiddleware, authGroup, entityGroup, wsGroup, healthGroup, wsportWs)
 	return app
 }
 
@@ -82,4 +108,17 @@ func InitAsyncApp() *asynctask.App {
 	processEntityHandler := handlers2.NewProcessEntityHandler()
 	app := asynctask.NewAsyncApp(asyncServer, processEntityHandler)
 	return app
+}
+
+func InitTelegramBotApp() *authtelegram.BotApp {
+	envEnv := env.NewEnv()
+	gormDB := db.NewGormDB(envEnv)
+	database := db.NewDatabase(gormDB)
+	telegramAttemptRepository := authpersistence.NewTelegramAttemptRepositoryImpl(database)
+	telegramContactRepository := authpersistence.NewTelegramContactRepositoryImpl(database)
+	tokenService := authsecurity.NewTokenServiceImpl()
+	telegramBotService := authservice.NewTelegramBotService(telegramAttemptRepository, telegramContactRepository, tokenService)
+	consoleLogger := logger.NewConsoleLogger()
+	botApp := authtelegram.NewBotApp(envEnv, database, telegramBotService, consoleLogger)
+	return botApp
 }

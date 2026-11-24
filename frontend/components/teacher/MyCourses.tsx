@@ -2,17 +2,21 @@ import Link from "next/link";
 
 export function MyCourses() {
   return (
-    <section className="rounded-2xl border border-line bg-white p-5">
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="text-lg font-semibold">Mening kurslarim</h2>
+    <section className="rounded-2xl border border-line bg-surface p-6">
+      <div className="flex items-center justify-between gap-3 border-b border-line pb-4">
+        <h2 className="font-display text-xl font-medium tracking-[-0.015em] text-ink">
+          Mening kurslarim
+        </h2>
         <Link
           href="/profile/courses/create"
-          className="text-sm font-medium text-accent"
+          className="rounded-full bg-accent-soft px-3.5 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent hover:text-paper"
         >
           Yaratish
         </Link>
       </div>
-      <p className="mt-4 text-sm text-ink/60">Hozircha kursingiz yo‘q.</p>
+      <p className="mt-4 text-sm leading-6 text-ink-muted">
+        Hozircha kursingiz yo‘q. Yangi tayyorlov kursini yuqoridagi tugma orqali ochishingiz mumkin.
+      </p>
     </section>
   );
 }
