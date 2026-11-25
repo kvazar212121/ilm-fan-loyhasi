@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ilm_fan/app/ilm_fan_app.dart';
 import 'package:ilm_fan/data/app_tabs.dart';
+import 'package:ilm_fan/data/auth_api.dart';
+import 'package:ilm_fan/data/native_google_auth.dart';
 import 'package:ilm_fan/data/roles.dart';
 import 'package:ilm_fan/data/uzbmb_news.dart';
 import 'package:ilm_fan/features/courses/courses_screen.dart';
@@ -15,37 +17,87 @@ import 'package:ilm_fan/features/tests/test_section_screen.dart';
 import 'package:ilm_fan/models/user_profile.dart';
 
 void main() {
-  testWidgets('Kirish usuli roldan oldin ko‘rsatiladi', (
+  testWidgets('Kirish usuli: Telefon SMS OTP, Telegram va Google ko‘rsatiladi', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const IlmFanApp());
+    final fakeApi = _FakeAuthApi();
+    await tester.pumpWidget(IlmFanApp(authApi: fakeApi));
 
-    expect(find.text('Kirish'), findsOneWidget);
-    expect(find.text('Google'), findsOneWidget);
-    expect(find.text('Telegram'), findsOneWidget);
-    expect(find.text('1-QADAM'), findsNothing);
-    expect(find.textContaining('Avval kirish usulini tanlang'), findsNothing);
-    expect(find.text('Kim sifatida kirasiz?'), findsNothing);
+    expect(find.text('Hisobga kirish'), findsOneWidget);
+    expect(find.text('Google bilan davom etish'), findsOneWidget);
+    expect(find.text('Telegram orqali kirish'), findsOneWidget);
+    expect(find.text('Telefon raqam bilan'), findsOneWidget);
 
-    await tester.tap(find.text('Google'));
+    await tester.ensureVisible(find.byKey(const ValueKey('login-method-phone')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('login-method-phone')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Maqsadingiz nima?'), findsOneWidget);
-    expect(find.text('Kim sifatida kirasiz?'), findsNothing);
-    expect(find.text('Kirish usuliga'), findsNothing);
-    expect(find.text('2-QADAM'), findsNothing);
-    expect(find.text('O‘qituvchiman'), findsNWidgets(2));
-    expect(find.text('O‘quvchiman'), findsOneWidget);
-
-    await tester.tap(
-      find.text('O‘quvchilarim uchun o‘quv materiallari yarataman'),
+    expect(find.text('Telefon raqam bilan kirish'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const ValueKey('phoneOtpInput')),
+      '+998901234567',
     );
+    await tester.tap(find.byKey(const ValueKey('sendOtpButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('SMS kodni kiriting'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('otpCodeInput')), '12345');
+    await tester.tap(find.byKey(const ValueKey('verifyOtpButton')));
+    await tester.pumpAndSettle();
+
+    // Backend returns registration_required -> Step 2: Shaxsiy ma’lumotlar
+    expect(find.text('Shaxsiy ma’lumotlar'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const ValueKey('profileFirstNameField')),
+      'Ali',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('profileLastNameField')),
+      'Valiyev',
+    );
+    await tester.tap(find.byKey(const ValueKey('profileBirthDatePicker')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('profileRegionDropdown')),
+    );
+    await tester.tap(find.byKey(const ValueKey('profileRegionDropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Toshkent shahri').last);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(const ValueKey('gender-male')));
+    await tester.tap(find.byKey(const ValueKey('gender-male')));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('profileContinueButton')),
+    );
+    await tester.tap(find.byKey(const ValueKey('profileContinueButton')));
+    await tester.pumpAndSettle();
+
+    // Step 3: Maqsad tanlash (3 ta tayyorlov yo‘nalishi)
+    expect(find.text('Maqsadingiz nima?'), findsOneWidget);
+    expect(find.text('Milliy sertifikatlarga tayyorlov'), findsOneWidget);
+    expect(find.text('OTMlarga tayyorlov'), findsOneWidget);
+    expect(find.text('OTM sessiyalariga tayyorlov'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('goal-teacher')));
     await tester.pumpAndSettle();
 
     expect(
-      find.text('Material yaratadigan faningizni tanlang.'),
+      find.text('Milliy sertifikat imtihoniga tayyorlanadigan faningizni tanlang.'),
       findsOneWidget,
     );
+    await tester.tap(find.byKey(const ValueKey('fan-option-matematika')));
+    await tester.pumpAndSettle();
+
+    expect(fakeApi.registeredRole, RoleId.teacher);
+    expect(fakeApi.registeredFans, ['matematika']);
+    expect(find.text('Tayyorlov'), findsWidgets);
   });
 
   testWidgets('Mashq javobni tushuntiradi va xatoni saqlaydi', (
@@ -472,7 +524,7 @@ void main() {
       );
       expect(find.text('Agentlik yangi qabul e’lon qildi'), findsNothing);
       expect(find.text('Barcha yangiliklar'), findsNothing);
-      expect(appTabs.any((tab) => tab.id == 'news'), isTrue);
+      expect(appTabs.any((tab) => tab.id == 'news'), isFalse);
       expect(appTabs.any((tab) => tab.id == 'courses'), isFalse);
 
       await tester.pumpWidget(
@@ -504,39 +556,28 @@ void main() {
     },
   );
 
-  testWidgets('Kurs o‘rniga Xabarlar tab ochiladi', (
+  testWidgets('Xabarlar bo‘limi pastki menyudan olib tashlangan', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: MainShell(
-          profile: const UserProfile(
+          profile: UserProfile(
             firstName: 'Ali',
             lastName: 'Valiyev',
             role: RoleId.teacher,
             subjectFanId: 'matematika',
           ),
-          newsRepository: _MemoryNewsRepository([
-            UzbmbNewsItem(
-              id: 12,
-              title: 'Matematika sertifikat yangiligi',
-              summary: 'Rasmiy e’lon.',
-              publishedAt: DateTime(2026, 11, 21),
-              category: 'Yangiliklar',
-              views: 1,
-            ),
-          ]),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Kurs'), findsNothing);
-    await tester.tap(find.text('Xabarlar'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Rasmiy e’lonlar'), findsOneWidget);
-    expect(find.text('Matematika sertifikat yangiligi'), findsOneWidget);
+    expect(find.text('Xabarlar'), findsNothing);
+    expect(find.text('Tayyorlov'), findsWidgets);
+    expect(find.text('Test'), findsOneWidget);
+    expect(find.text('Reels'), findsOneWidget);
+    expect(find.text('Profil'), findsOneWidget);
   });
 
   testWidgets(
@@ -836,21 +877,52 @@ void main() {
   );
 
   testWidgets(
-    'O‘quvchiman tanlanganda 3 rol va bir nechta fan tanlash ishlaydi',
+    'OTM va sessiyaga tayyorlovda bir nechta fan tanlash ishlaydi',
     (WidgetTester tester) async {
-      await tester.pumpWidget(const IlmFanApp());
+      await tester.pumpWidget(IlmFanApp(authApi: _FakeAuthApi()));
 
-      await tester.tap(find.text('Google'));
+      await tester.ensureVisible(find.byKey(const ValueKey('demoLoginButton')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('demoLoginButton')));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const ValueKey('selectLearnerCategory')));
+      await tester.enterText(
+        find.byKey(const ValueKey('profileFirstNameField')),
+        'Jasur',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('profileLastNameField')),
+        'Karimov',
+      );
+      await tester.tap(find.byKey(const ValueKey('profileBirthDatePicker')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('profileRegionDropdown')),
+      );
+      await tester.tap(find.byKey(const ValueKey('profileRegionDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Toshkent shahri').last);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const ValueKey('gender-male')));
+      await tester.tap(find.byKey(const ValueKey('gender-male')));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('profileContinueButton')),
+      );
+      await tester.tap(find.byKey(const ValueKey('profileContinueButton')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Maktab o‘quvchisi'), findsOneWidget);
-      expect(find.text('Abituriyent'), findsOneWidget);
-      expect(find.text('Talaba'), findsOneWidget);
+      expect(find.text('Milliy sertifikatlarga tayyorlov'), findsOneWidget);
+      expect(find.text('OTMlarga tayyorlov'), findsOneWidget);
+      expect(find.text('OTM sessiyalariga tayyorlov'), findsOneWidget);
 
-      await tester.tap(find.byKey(const ValueKey('learner-role-schoolStudent')));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('goal-universityStudent')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('goal-universityStudent')));
       await tester.pumpAndSettle();
 
       expect(find.text('Qaysi fanlar?'), findsOneWidget);
@@ -864,7 +936,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('confirmFansButton')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Ism'), findsOneWidget);
+      expect(find.text('Darslik marketplace'), findsOneWidget);
     },
   );
 
@@ -961,6 +1033,25 @@ void main() {
       );
     },
   );
+
+  testWidgets('Native Google Sign-In ilova ichida ID token bilan kiradi', (
+    WidgetTester tester,
+  ) async {
+    final fakeApi = _FakeAuthApi();
+    await tester.pumpWidget(
+      IlmFanApp(authApi: fakeApi, googleAuth: _FakeNativeGoogleAuth()),
+    );
+
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('login-method-google')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('login-method-google')));
+    await tester.pumpAndSettle();
+
+    expect(fakeApi.lastGoogleIdToken, 'fake-google-id-token');
+    expect(find.text('Shaxsiy ma’lumotlar'), findsOneWidget);
+  });
 }
 
 class _MemoryNewsRepository implements NewsRepository {
@@ -973,6 +1064,108 @@ class _MemoryNewsRepository implements NewsRepository {
 
   @override
   void dispose() {}
+}
+
+class _FakeNativeGoogleAuth implements NativeGoogleAuth {
+  @override
+  Future<String?> signInForIdToken() async => 'fake-google-id-token';
+}
+
+class _FakeAuthApi implements AuthApi {
+  RoleId? registeredRole;
+  List<String> registeredFans = const [];
+  String? lastGoogleIdToken;
+
+  @override
+  Future<SendSmsResult> sendSmsOtp(String phone) async =>
+      const SendSmsResult(phoneMasked: '+998 90 *** 45 67', resendAfterSeconds: 60);
+
+  @override
+  Future<AuthOutcome> verifySmsOtp({
+    required String phone,
+    required String code,
+  }) async =>
+      const AuthOutcome(
+        status: 'registration_required',
+        registrationToken: 'reg-token-123',
+      );
+
+  @override
+  Future<TelegramStartResult> startTelegram() async =>
+      const TelegramStartResult(
+        attemptId: 'att-1',
+        secret: 'sec-1',
+        botUsername: 'ilm_fan_bot',
+        deepLink: 'https://t.me/ilm_fan_bot?start=abc',
+      );
+
+  @override
+  Future<AuthOutcome> pollTelegram({
+    required String attemptId,
+    required String secret,
+  }) async => const AuthOutcome(status: 'pending');
+
+  @override
+  Future<String> startGoogle() async => 'https://accounts.google.com/o/oauth2';
+
+  @override
+  Future<AuthOutcome> loginWithGoogleIdToken(String idToken) async {
+    lastGoogleIdToken = idToken;
+    return const AuthOutcome(
+      status: 'registration_required',
+      registrationToken: 'reg-google-token',
+    );
+  }
+
+  @override
+  Future<RegistrationPrefill> inspectRegistration(
+    String registrationToken,
+  ) async => const RegistrationPrefill(
+    method: 'phone',
+    phone: '+998901234567',
+    phoneVerified: true,
+  );
+
+  @override
+  Future<AuthOutcome> verifyRegistrationPhone({
+    required String registrationToken,
+    required String phone,
+    required String code,
+  }) async => const AuthOutcome(status: 'registration_required');
+
+  @override
+  Future<UserProfile> completeRegistration({
+    required String registrationToken,
+    required RoleId role,
+    required List<String> fanIds,
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String birthDate,
+    required String region,
+    required String gender,
+    String avatarUrl = '',
+  }) async {
+    registeredRole = role;
+    registeredFans = fanIds;
+    return UserProfile(
+      id: 1,
+      firstName: firstName,
+      lastName: lastName,
+      role: role,
+      subjectFanId: fanIds.isNotEmpty ? fanIds.first : null,
+      subjectFanIds: fanIds,
+      phone: phone,
+      birthDate: birthDate,
+      region: region,
+      gender: gender,
+      accessToken: 'jwt-access',
+      refreshToken: 'jwt-refresh',
+    );
+  }
+
+  @override
+  Future<void> logout({String? accessToken, String? refreshToken}) async {}
 }
 
 void _doNothing() {}

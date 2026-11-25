@@ -579,24 +579,29 @@ class _TextbookMarketplaceScreenState extends State<TextbookMarketplaceScreen> {
               ),
             )
           else
-            GridView.builder(
-              key: const ValueKey('marketplaceGrid'),
-              itemCount: items.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                mainAxisExtent: 266,
-              ),
-              itemBuilder: (_, index) {
-                final item = items[index];
-                return _MarketplaceCard(
-                  item: item,
-                  acquired: _acquiredIds.contains(item.id),
-                  onTap: () => _openItemDetails(item),
-                  onAcquire: () => _acquireItem(item),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 680 ? 3 : 2;
+                return GridView.builder(
+                  key: const ValueKey('marketplaceGrid'),
+                  itemCount: items.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    mainAxisExtent: 266,
+                  ),
+                  itemBuilder: (_, index) {
+                    final item = items[index];
+                    return _MarketplaceCard(
+                      item: item,
+                      acquired: _acquiredIds.contains(item.id),
+                      onTap: () => _openItemDetails(item),
+                      onAcquire: () => _acquireItem(item),
+                    );
+                  },
                 );
               },
             ),
@@ -634,7 +639,7 @@ class _DetailStat extends StatelessWidget {
   }
 }
 
-class _MarketplaceCard extends StatelessWidget {
+class _MarketplaceCard extends StatefulWidget {
   const _MarketplaceCard({
     required this.item,
     required this.acquired,
@@ -648,25 +653,42 @@ class _MarketplaceCard extends StatelessWidget {
   final VoidCallback onAcquire;
 
   @override
+  State<_MarketplaceCard> createState() => _MarketplaceCardState();
+}
+
+class _MarketplaceCardState extends State<_MarketplaceCard> {
+  var _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final item = widget.item;
+    final acquired = widget.acquired;
     final badgeColor = item.isFree
         ? IlmColors.accent
         : const Color(0xFFB45309);
 
-    return Material(
-      color: Colors.white,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: const BorderSide(color: IlmColors.line),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(11),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    return Semantics(
+      label: '${item.title}, ${item.authorName}, ${item.formattedPrice}',
+      button: true,
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOutCubic,
+        child: Material(
+          color: IlmColors.surface,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: IlmColors.line),
+          ),
+          child: InkWell(
+            onTap: widget.onTap,
+            onHighlightChanged: (v) => setState(() => _pressed = v),
+            child: Padding(
+              padding: const EdgeInsets.all(11),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               Container(
                 height: 82,
                 width: double.infinity,
@@ -818,7 +840,7 @@ class _MarketplaceCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: onAcquire,
+                    onPressed: widget.onAcquire,
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -843,6 +865,8 @@ class _MarketplaceCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
+    ),
     );
   }
 }

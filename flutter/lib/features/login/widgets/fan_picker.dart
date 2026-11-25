@@ -24,7 +24,7 @@ class FanPicker extends StatefulWidget {
 class _FanPickerState extends State<FanPicker> {
   final Set<String> _selected = {};
 
-  bool get _allowMultiple => isLearnerRole(widget.role.id);
+  bool get _allowMultiple => roleAllowsMultipleSubjects(widget.role.id);
 
   void _toggle(String fanId) {
     if (!_allowMultiple) {
@@ -42,25 +42,25 @@ class _FanPickerState extends State<FanPicker> {
   Widget build(BuildContext context) {
     final subtitle = switch (widget.role.id) {
       RoleId.teacher =>
-        'Sertifikat imtihoniga tayyorlanadigan faningizni tanlang.',
+        'Milliy sertifikat imtihoniga tayyorlanadigan faningizni tanlang.',
       RoleId.teacherMaterials => 'Material yaratadigan faningizni tanlang.',
       RoleId.student =>
-        'Kirish imtihoniga tayyorlanadigan bir nechta faningizni tanlang.',
+        'OTM kirish imtihoni uchun bir nechta faningizni tanlang.',
       RoleId.schoolStudent =>
         'O‘rganmoqchi bo‘lgan bir nechta maktab fanlaringizni tanlang.',
       RoleId.universityStudent =>
-        'Chuqurlashtirib o‘rganadigan fanlaringizni tanlang.',
+        'OTM sessiyalariga tayyorlanadigan bir nechta faningizni tanlang.',
     };
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         LoginStepHeader(
-          stepLabel: '3-QADAM',
+          stepLabel: '4-QADAM',
           title: _allowMultiple ? 'Qaysi fanlar?' : 'Qaysi fan?',
           subtitle: subtitle,
           onBack: widget.onBack,
-          backLabel: '← Rolni o‘zgartirish',
+          backLabel: '← Maqsadni o‘zgartirish',
         ),
         const SizedBox(height: 20),
         ...tayyorlovFans.map((fan) {

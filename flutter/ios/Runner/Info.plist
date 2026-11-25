@@ -70,5 +70,20 @@
 	<string>Profil rasmini tanlash uchun.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Profil surati uchun kamera.</string>
+	<key>GIDClientID</key>
+	<string>897001754273-8gc9jmfovhebgcjkd2c7mj3nt75j4m3i.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>897001754273-2ag6taddom0jbr8oq6j37vci8qtbsq33.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.897001754273-8gc9jmfovhebgcjkd2c7mj3nt75j4m3i</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

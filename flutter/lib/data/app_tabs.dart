@@ -43,12 +43,6 @@ const appTabs = <AppTab>[
     blurb: 'Mashq testlari.',
   ),
   AppTab(
-    id: 'news',
-    label: 'Xabarlar',
-    icon: Icons.campaign_outlined,
-    blurb: 'Bilimni baholash agentligining rasmiy yangiliklari.',
-  ),
-  AppTab(
     id: 'reels',
     label: 'Reels',
     icon: Icons.movie_filter_outlined,
@@ -96,7 +90,7 @@ const teacherMaterialsTabs = <AppTab>[
   ),
 ];
 
-/// Abituriyent menyusi: Tayyorlov, Testlar, Xabarlar, Reels, Profil.
+/// Abituriyent / OTMlarga tayyorlov menyusi: Tayyorlov, Testlar, Reels, Profil.
 const applicantTabs = <AppTab>[
   AppTab(
     id: 'tayyorlovlar',
@@ -109,12 +103,6 @@ const applicantTabs = <AppTab>[
     label: 'Testlar',
     icon: Icons.quiz_outlined,
     blurb: 'DTM mashq testlari, bellashuv va reyting.',
-  ),
-  AppTab(
-    id: 'news',
-    label: 'Xabarlar',
-    icon: Icons.campaign_outlined,
-    blurb: 'Bilimni baholash agentligining rasmiy yangiliklari.',
   ),
   AppTab(
     id: 'reels',

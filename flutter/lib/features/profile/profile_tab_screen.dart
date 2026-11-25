@@ -22,14 +22,12 @@ class ProfileTabScreen extends StatefulWidget {
     this.onLogout,
     this.onOpenPreparation,
     this.onOpenMarketplace,
-    this.onOpenNews,
   });
 
   final UserProfile profile;
   final VoidCallback? onLogout;
   final VoidCallback? onOpenPreparation;
   final VoidCallback? onOpenMarketplace;
-  final VoidCallback? onOpenNews;
 
   @override
   State<ProfileTabScreen> createState() => _ProfileTabScreenState();
@@ -187,51 +185,6 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
                         color: IlmColors.inkMuted,
                       ),
                       onTap: widget.onOpenMarketplace,
-                    ),
-                  ),
-                ],
-                if (widget.profile.role == RoleId.universityStudent &&
-                    widget.onOpenNews != null) ...[
-                  const SizedBox(height: 12),
-                  Material(
-                    color: Colors.white,
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      side: const BorderSide(color: IlmColors.line),
-                    ),
-                    child: ListTile(
-                      key: const ValueKey('openUniversityNews'),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      leading: CircleAvatar(
-                        backgroundColor: IlmColors.accent.withValues(alpha: 0.12),
-                        child: const Icon(
-                          Icons.campaign_outlined,
-                          color: IlmColors.accent,
-                        ),
-                      ),
-                      title: const Text(
-                        'Rasmiy xabarlar',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: IlmColors.ink,
-                        ),
-                      ),
-                      subtitle: const Text(
-                        'Magistratura, grant va sertifikat e’lonlari',
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          color: IlmColors.inkMuted,
-                        ),
-                      ),
-                      trailing: const Icon(
-                        Icons.chevron_right,
-                        color: IlmColors.inkMuted,
-                      ),
-                      onTap: widget.onOpenNews,
                     ),
                   ),
                 ],

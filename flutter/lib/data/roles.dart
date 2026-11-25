@@ -14,6 +14,12 @@ bool isLearnerRole(RoleId? id) {
       id == RoleId.universityStudent;
 }
 
+bool roleAllowsMultipleSubjects(RoleId id) {
+  return id == RoleId.student ||
+      id == RoleId.universityStudent ||
+      id == RoleId.schoolStudent;
+}
+
 class RoleOption {
   const RoleOption({
     required this.id,
@@ -28,45 +34,46 @@ class RoleOption {
   final IconData icon;
 }
 
-const teacherRoleOptions = <RoleOption>[
+/// Mobil ilovada kirishdan keyin so‘raladigan 3 ta asosiy maqsad.
+const loginGoalOptions = <RoleOption>[
   RoleOption(
     id: RoleId.teacher,
-    title: 'O‘qituvchiman',
-    text: 'Sertifikat imtihoniga tayyorlanish uchun',
+    title: 'Milliy sertifikatlarga tayyorlov',
+    text: 'O‘qituvchilar o‘z fanidan milliy sertifikat imtihoniga tayyorlanishi uchun',
     icon: Icons.workspace_premium_outlined,
   ),
+  RoleOption(
+    id: RoleId.student,
+    title: 'OTMlarga tayyorlov',
+    text: 'OTM kirish imtihonlariga bir nechta fan bo‘yicha tayyorgarlik',
+    icon: Icons.school_outlined,
+  ),
+  RoleOption(
+    id: RoleId.universityStudent,
+    title: 'OTM sessiyalariga tayyorlov',
+    text: 'Talabalar uchun fanlar va sessiya imtihonlariga tayyorgarlik',
+    icon: Icons.account_balance_outlined,
+  ),
+];
+
+const _legacyRoleOptions = <RoleOption>[
   RoleOption(
     id: RoleId.teacherMaterials,
     title: 'O‘qituvchiman',
     text: 'O‘quvchilarim uchun o‘quv materiallari yarataman',
     icon: Icons.edit_note_rounded,
   ),
-];
-
-const learnerSubRoleOptions = <RoleOption>[
   RoleOption(
     id: RoleId.schoolStudent,
     title: 'Maktab o‘quvchisi',
     text: 'Sinf darsliklari, testlar va uy vazifalari',
     icon: Icons.menu_book_outlined,
   ),
-  RoleOption(
-    id: RoleId.student,
-    title: 'Abituriyent',
-    text: 'OTM kirish imtihonlariga tayyorlanaman',
-    icon: Icons.school_outlined,
-  ),
-  RoleOption(
-    id: RoleId.universityStudent,
-    title: 'Talaba',
-    text: 'OTM, kurslar va chuqurlashtirilgan darsliklar',
-    icon: Icons.account_balance_outlined,
-  ),
 ];
 
 const roleOptions = <RoleOption>[
-  ...teacherRoleOptions,
-  ...learnerSubRoleOptions,
+  ...loginGoalOptions,
+  ..._legacyRoleOptions,
 ];
 
 RoleOption? roleById(RoleId? id) {

@@ -139,9 +139,6 @@ class _MainShellState extends State<MainShell> {
                         widget.profile.role == RoleId.student
                     ? _openMarketplace
                     : null,
-                onOpenNews: widget.profile.role == RoleId.universityStudent
-                    ? _openNewsPage
-                    : null,
               ),
               _ => ShellTabPage(tab: tab, profile: widget.profile),
             },
@@ -210,20 +207,6 @@ class _MainShellState extends State<MainShell> {
           profile: widget.profile,
           canPublish: widget.profile.role == RoleId.teacherMaterials,
           teacherTextbooks: _teacherTextbooks,
-        ),
-      ),
-    );
-  }
-
-  void _openNewsPage() {
-    Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(
-        builder: (_) => Scaffold(
-          backgroundColor: IlmColors.paper,
-          body: NewsScreen(
-            profile: widget.profile,
-            repository: widget.newsRepository,
-          ),
         ),
       ),
     );
